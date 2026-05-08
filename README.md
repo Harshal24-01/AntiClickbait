@@ -35,7 +35,7 @@ Feature	Description
 🏗️ System Architecture
 High-Level Overview
 The system bridges a Chrome content script with a modular Flask backend powered by high-performance AI models.
-
+```mermaid
 graph TB
     subgraph Client ["🌐 Chrome Extension"]
         UI[🎨 YouTube UI Overlay]
@@ -65,7 +65,9 @@ graph TB
     TR --> TA
     TR -->|Context| LLM
     API -->|Verdict + Confidence| CS
+```
 Request Flow (Sequence Diagram)
+```mermaid
 sequenceDiagram
     participant User as 👤 User
     participant Ext as 🔌 Chrome Extension
@@ -93,7 +95,9 @@ sequenceDiagram
     deactivate API
     
     Ext->>User: Display badge + insights
+```
 Decision Flowchart
+```mermaid
 flowchart LR
     A[Video URL Input] --> B{Hybrid Analysis}
     
@@ -114,6 +118,7 @@ flowchart LR
     J -->|Borderline| M[⚠️ SUSPICIOUS]
     
     K & L & M --> N[Display Badge + Reason]
+```
 ⚙️ How It Works
 1. Statistical Analysis (LightGBM)
 Analyzes 55+ features including:
