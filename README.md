@@ -36,93 +36,99 @@ Acknowledgments
 
 ✨ Key Features
 <table> <thead> <tr> <th align="center">Feature</th> <th align="left">Description</th> </tr> </thead> <tbody> <tr> <td align="center">🧠 <strong>Hybrid Detection Engine</strong></td> <td align="left">LightGBM model trained on 55+ statistical features (engagement ratios, title-description consistency, etc.)</td> </tr> <tr> <td align="center">🤖 <strong>LLM Verification</strong></td> <td align="left">Deep semantic analysis via Llama 3 (Cerebras Cloud) to verify titles against transcripts</td> </tr> <tr> <td align="center">📝 <strong>Transcript Verification</strong></td> <td align="left">Fetches and analyzes video transcripts to find "Key Moments" where promises are fulfilled</td> </tr> <tr> <td align="center">🔌 <strong>Real-Time Extension</strong></td> <td align="left">Sleek Chrome extension adding status badges directly to YouTube interface</td> </tr> <tr> <td align="center">🔑 <strong>Smart Key Rotation</strong></td> <td align="left">Automatic rotation of Transcripts API keys to handle rate limits and quotas</td> </tr> <tr> <td align="center">⚡ <strong>40% Faster Processing</strong></td> <td align="left">Optimized backend pipelines for real-time responses</td> </tr> </tbody> </table>
-🏗️ System Architecture
-🌐 High-Level Overview
+
+# 🏗️ System Architecture
+
+## 🌐 High-Level Overview
+
 The system bridges a Chrome content script with a modular Flask backend powered by high-performance AI models.
 
 ```mermaid
 graph TB
-    subgraph Client ["🌐 Chrome Extension"]
-        UI[🎨 YouTube UI Overlay]
-        CS[📜 Content Script]
+
+    subgraph Client["Chrome Extension"]
+        UI["YouTube UI Overlay"]
+        CS["Content Script"]
     end
 
-    subgraph Server ["⚙️ Backend API (Flask)"]
-        direction TB
-        API[🚪 Flask Gateway]
-        ML[📊 LightGBM Engine<br/>55+ Features]
-        LLM[🧠 Llama 3 Brain<br/>Semantic Analysis]
-        TR[📹 Transcript Service<br/>YouTube API]
+    subgraph Server["Backend API (Flask)"]
+        API["Flask Gateway"]
+        ML["LightGBM Engine"]
+        LLM["Llama 3 Brain"]
+        TR["Transcript Service"]
     end
 
-    subgraph External ["☁️ External Services"]
-        YT[YouTube Data API]
-        CB[Cerebras Cloud]
-        TA[TranscriptAPI.com]
+    subgraph External["External Services"]
+        YT["YouTube Data API"]
+        CB["Cerebras Cloud"]
+        TA["TranscriptAPI.com"]
     end
 
     UI --> CS
-    CS -->|POST /predict| API
+    CS --> API
     API --> ML
     API --> LLM
     TR --> YT
     LLM --> CB
     TR --> TA
-    TR -->|Context| LLM
-    API -->|Verdict + Confidence| CS
+    TR --> LLM
+    API --> CS
 ```
-🔄 Request Flow (Sequence Diagram)
+
+# 🔄 Request Flow
+
 ```mermaid
 sequenceDiagram
-    participant User as 👤 User
-    participant Ext as 🔌 Chrome Extension
-    participant API as 🚪 Flask Backend
-    participant ML as 📊 LightGBM
-    participant TR as 📹 Transcript API
-    participant LLM as 🧠 Llama 3
 
-    User->>Ext: Clicks on YouTube video
-    Ext->>API: POST /predict (video_id)
-    
-    activate API
-    par Parallel Analysis
-        API->>ML: Calculate statistical probability
-        ML-->>API: Score (0-100)
-    and
-        API->>TR: Fetch video transcript
-        TR-->>API: Transcript text
-        API->>LLM: Semantic analysis
-        LLM-->>API: Verdict + Key Moments
+    participant User
+    participant Extension
+    participant API
+    participant ML
+    participant Transcript
+    participant LLM
+
+    User->>Extension: Open YouTube video
+    Extension->>API: POST /predict
+
+    par Statistical Analysis
+        API->>ML: Calculate score
+        ML-->>API: Probability
+    and Semantic Analysis
+        API->>Transcript: Fetch transcript
+        Transcript-->>API: Transcript text
+        API->>LLM: Analyze content
+        LLM-->>API: Verdict
     end
-    
-    API->>API: Hybrid ensemble decision
-    API-->>Ext: Final verdict + confidence score
-    deactivate API
-    
-    Ext->>User: Display badge + insights
+
+    API-->>Extension: Final response
+    Extension-->>User: Display badge
 ```
-🧭 Decision Flowchart
+
+# 🧭 Decision Flowchart
+
 ```mermaid
 flowchart LR
-    A[Video URL Input] --> B{Hybrid Analysis}
-    
-    B --> C[LightGBM<br/>Statistical Model]
-    B --> D[Llama 3<br/>Semantic Model]
-    
-    C --> E[Engagement Score]
-    C --> F[Metadata Consistency]
-    
-    D --> G[Title-Transcript Match]
-    D --> H[Promise Verification]
-    
-    E & F & G & H --> I[Ensemble Engine]
-    
-    I --> J{Confidence > 0.7?}
-    J -->|Yes| K[🚨 CLICKBAIT]
-    J -->|No| L[✅ LEGITIMATE]
-    J -->|Borderline| M[⚠️ SUSPICIOUS]
-    
-    K & L & M --> N[Display Badge + Reason]
+
+    A[Video URL] --> B{Hybrid Analysis}
+
+    B --> C[LightGBM]
+    B --> D[Llama 3]
+
+    C --> E[Statistical Score]
+    D --> F[Semantic Score]
+
+    E --> G[Ensemble Engine]
+    F --> G
+
+    G --> H{Confidence > 0.7}
+
+    H -->|Yes| I[Clickbait]
+    H -->|No| J[Legitimate]
+    H -->|Borderline| K[Suspicious]
+
+    I --> L[Display Badge]
+    J --> L
+    K --> L
 ```
 ⚙️ How It Works
 1. Statistical Analysis (LightGBM)
